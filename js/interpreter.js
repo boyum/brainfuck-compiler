@@ -9,10 +9,14 @@ class Interpreter {
     const value = this.memoryTape[this.memoryIndex];
     const valueNotSet = typeof value === 'undefined';
     if (valueNotSet) {
-      this.memoryTape[this.memoryIndex] = 0;
+      this.currentValue = 0;
     }
     
     return this.memoryTape[this.memoryIndex];
+  }
+
+  set currentValue(value) {
+    this.memoryTape[this.memoryIndex] = value;
   }
   
   /**
@@ -63,12 +67,42 @@ class Interpreter {
     }
 
 
+    const earliestBlockStart = this.code.indexOf('[');
+    const hasEarlierBlockStart = earliestBlockStart > -1 && earliestBlockStart < this.codeIndex;
+    if (!hasEarlierBlockStart) {
+      console.error(`Syntax error at character number ${this.codeIndex}. No earlier block start ('[')`);
+      return;
+    }
+
+
+    while (this.codeIndex--) {
+      const isBlockStartCharacter = this.code[this.codeIndex] === '[';
+      if (isBlockStartCharacter) { 
+        this.codeIndex++;
+        return;
+      }
+    }
   }
 
   jumpToAfterBlockEnd() {
     const doNothing = this.currentValue === 0;
     if (doNothing) {
       return;
+    }
+
+    const lastBlockEnd = this.code.lastIndexOf(']');
+    const hasLaterBlockEnd = lastBlockEnd > -1 && lastBlockEnd > this.codeIndex;
+    if (!hasLaterBlockEnd) {
+      console.error(`Syntax error at character number ${this.codeIndex}. No later block end (']')`);
+      return;
+    }
+
+    while (this.codeIndex++ <= this.code.length) {
+      const isBlockEndCharacter = this.code[this.codeIndex] === ']';
+      if (isBlockEndCharacter) {
+        this.codeIndex++;
+        return;
+      }
     }
   }
 

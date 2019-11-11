@@ -41,13 +41,14 @@ test('`incrementValue()` increments the value of the current memory pointer by o
 
 test('`decrementValue()` decrements the value of the current memory pointer by one', t => {
   interpreter = new Interpreter();
-  
+
   t.is(interpreter.currentValue, 0);
   interpreter.decrementValue();
   t.is(interpreter.currentValue, -1);
 });
 
-test('`jumpToAfterBlockStart()` sets the code pointer to the index after the previous if the current value is 0`[`', t => {
+test.serial('`jumpToAfterBlockStart()` sets the code pointer to the index after the previous if the current value is 0', t => {
+  interpreter.currentValue = 0;
   interpreter.code = '+><<>+[[.[<<<+]]';
   interpreter.codeIndex = interpreter.code.length - 1;
   const previousBracketIndex = interpreter.code.lastIndexOf('[');
@@ -57,7 +58,8 @@ test('`jumpToAfterBlockStart()` sets the code pointer to the index after the pre
   t.is(interpreter.codeIndex, previousBracketIndex + 1);
 });
 
-test('`jumpToAfterBlockStart()` does not set the code pointer to the index after the previous if the current value isn\'t 0`[`', t => {
+test('`jumpToAfterBlockStart()` does not set the code pointer to the index after the previous if the current value isn\'t 0', t => {
+  interpreter.currentValue = 1;
   interpreter.incrementValue();
   interpreter.code = '+><<>+[[.[<<<+]]';
   const startIndex = interpreter.code.length - 1;
@@ -69,17 +71,19 @@ test('`jumpToAfterBlockStart()` does not set the code pointer to the index after
 });
 
 test('`jumpToAfterBlockEnd()` sets the code pointer to the index after the next `]` if the current value isn\'t 0', t => {
+  interpreter.currentValue = 1;
   interpreter.incrementValue();
   interpreter.code = '+><<>+[[.[<<<+]]';
   interpreter.codeIndex = 0;
-  const nextBracketIndex = interpreter.code.indexOf('[');
+  const nextBracketIndex = interpreter.code.indexOf(']');
 
   interpreter.jumpToAfterBlockEnd();
 
   t.is(interpreter.codeIndex, nextBracketIndex + 1);
 });
 
-test('`jumpToAfterBlockEnd()` does not set the code pointer to the index after the next `]` if the current value is', t => {
+test('`jumpToAfterBlockEnd()` does not set the code pointer to the index after the next `]` if the current value is 0', t => {
+  interpreter.currentValue = 0;
   interpreter.code = '+><<>+[[.[<<<+]]';
   const startIndex = 0;
   interpreter.codeIndex = startIndex;
