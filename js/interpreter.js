@@ -3,9 +3,7 @@ class Interpreter {
   memoryIndex = 0;
   codeIndex = 0;
   
-  constructor() {
-    this.reset();
-  }
+  constructor() { }
   
   get currentValue() {
     const value = this.memoryTape[this.memoryIndex];

@@ -15,25 +15,33 @@ test('The memory tape should be initialized as an empty array', t => {
   t.deepEqual(interpreter.memoryTape, []);
 });
 
-test.serial('`incrementPointer()` increments the memory pointer by one', t => {
+test('`incrementPointer()` increments the memory pointer by one', t => {
+  interpreter = new Interpreter();
+  
   t.is(interpreter.memoryIndex, 0);
   interpreter.incrementPointer();
   t.is(interpreter.memoryIndex, 1);
 });
 
-test.serial('`decrementPointer()` decrements the memory pointer by one', t => {
+test('`decrementPointer()` decrements the memory pointer by one', t => {  
+  interpreter = new Interpreter();
+
   t.is(interpreter.memoryIndex, 0);
   interpreter.decrementPointer();
   t.is(interpreter.memoryIndex, -1);
 });
 
 test('`incrementValue()` increments the value of the current memory pointer by one', t => {
+  interpreter = new Interpreter();
+
   t.is(interpreter.currentValue, 0);
   interpreter.incrementValue();
   t.is(interpreter.currentValue, 1);
 });
 
 test('`decrementValue()` decrements the value of the current memory pointer by one', t => {
+  interpreter = new Interpreter();
+  
   t.is(interpreter.currentValue, 0);
   interpreter.decrementValue();
   t.is(interpreter.currentValue, -1);
