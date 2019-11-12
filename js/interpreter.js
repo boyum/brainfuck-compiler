@@ -2,30 +2,51 @@ class Interpreter {
   memoryTape = [];
   memoryIndex = 0;
   codeIndex = 0;
-  
-  constructor() { }
-  
+  result = '';
+
+  constructor() {}
+
   get currentValue() {
     const value = this.memoryTape[this.memoryIndex];
     const valueNotSet = typeof value === 'undefined';
     if (valueNotSet) {
       this.currentValue = 0;
     }
-    
+
     return this.memoryTape[this.memoryIndex];
   }
 
   set currentValue(value) {
+    
     this.memoryTape[this.memoryIndex] = value;
   }
-  
+
   /**
    * Interprets the Brainfuck code in the input string
    * @param {string} code 
    */
-  interpret(code) {
+  interpret(code) {    
+    let printAfterRun = false;
     this.reset();
-    this.code = code;
+    this.code = this.removeComments(code);
+    
+    while (this.codeIndex++ < this.code.length) {
+      const currentCodeCharacter = this.code[this.codeIndex];
+      switch (currentCodeCharacter) {
+        case '>': this.incrementPointer(); break;
+        case '<': this.decrementPointer(); break;
+        case '+': this.incrementValue(); break;
+        case '-': this.decrementValue(); break;
+        case '.': this.printValue(); printAfterRun = true; break;
+        case ',': this.readValue(); break;
+        case '[': this.jumpToAfterBlockEnd(); break;
+        case ']': this.jumpToAfterBlockStart(); break;
+      }
+    }
+
+    if (printAfterRun) {
+      console.info(this.result);
+    }
   }
 
   /**
@@ -37,6 +58,7 @@ class Interpreter {
   }
 
   incrementPointer() {
+    
     this.memoryIndex++;
   }
 
@@ -45,27 +67,39 @@ class Interpreter {
   }
 
   incrementValue() {
-    this.memoryTape[this.memoryIndex]++;
+    if (!this.currentValue) {
+      this.currentValue = 0;
+    }
+    this.currentValue++;
   }
 
   decrementValue() {
-    this.memoryTape[this.memoryIndex]--;
+    if (!this.currentValue) {
+      this.currentValue = 0;
+    }
+
+    this.currentValue--;
   }
 
+  /**
+   * Instead of printing, we add the current value to the `result` property for easier testing.
+   */
   printValue() {
-    console.log(this.currentValue);
+    
+    
+    this.result += String.fromCharCode(this.currentValue);
+    
   }
 
   readValue() {
 
   }
-  
+
   jumpToAfterBlockStart() {
-    const doNothing = this.currentValue !== 0;
+    const doNothing = this.currentValue === 0;
     if (doNothing) {
       return;
     }
-
 
     const earliestBlockStart = this.code.indexOf('[');
     const hasEarlierBlockStart = earliestBlockStart > -1 && earliestBlockStart < this.codeIndex;
@@ -74,10 +108,9 @@ class Interpreter {
       return;
     }
 
-
     while (this.codeIndex--) {
       const isBlockStartCharacter = this.code[this.codeIndex] === '[';
-      if (isBlockStartCharacter) { 
+      if (isBlockStartCharacter) {
         this.codeIndex++;
         return;
       }
@@ -85,7 +118,8 @@ class Interpreter {
   }
 
   jumpToAfterBlockEnd() {
-    const doNothing = this.currentValue === 0;
+    
+    const doNothing = this.currentValue !== 0;
     if (doNothing) {
       return;
     }
@@ -109,6 +143,14 @@ class Interpreter {
   reset() {
     this.initMemoryTape();
     this.codeIndex = 0;
+  }
+
+  /**
+   * Removes any character that isn't <>[],.+-
+   * @param {string} codeStr 
+   */
+  removeComments(codeStr) {
+    return codeStr.replace(/[^\>\<\+\-\.\,\[\]]/g, '');
   }
 }
 
