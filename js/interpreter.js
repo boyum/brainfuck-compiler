@@ -16,8 +16,7 @@ class Interpreter {
     return this.memoryTape[this.memoryIndex];
   }
 
-  set currentValue(value) {
-    
+  set currentValue(value) {    
     this.memoryTape[this.memoryIndex] = value;
   }
 
@@ -30,8 +29,9 @@ class Interpreter {
     this.reset();
     this.code = this.removeComments(code);
     
-    while (this.codeIndex++ < this.code.length) {
+    while (this.codeIndex < this.code.length) {
       const currentCodeCharacter = this.code[this.codeIndex];
+      
       switch (currentCodeCharacter) {
         case '>': this.incrementPointer(); break;
         case '<': this.decrementPointer(); break;
@@ -42,6 +42,8 @@ class Interpreter {
         case '[': this.jumpToAfterBlockEnd(); break;
         case ']': this.jumpToAfterBlockStart(); break;
       }
+
+      this.codeIndex++;
     }
 
     if (printAfterRun) {
@@ -57,8 +59,7 @@ class Interpreter {
     this.memoryTape = [];
   }
 
-  incrementPointer() {
-    
+  incrementPointer() { 
     this.memoryIndex++;
   }
 
@@ -84,11 +85,8 @@ class Interpreter {
   /**
    * Instead of printing, we add the current value to the `result` property for easier testing.
    */
-  printValue() {
-    
-    
+  printValue() { 
     this.result += String.fromCharCode(this.currentValue);
-    
   }
 
   readValue() {
@@ -111,14 +109,13 @@ class Interpreter {
     while (this.codeIndex--) {
       const isBlockStartCharacter = this.code[this.codeIndex] === '[';
       if (isBlockStartCharacter) {
-        this.codeIndex++;
+        // this.codeIndex++;
         return;
       }
     }
   }
 
   jumpToAfterBlockEnd() {
-    
     const doNothing = this.currentValue !== 0;
     if (doNothing) {
       return;
@@ -134,7 +131,7 @@ class Interpreter {
     while (this.codeIndex++ <= this.code.length) {
       const isBlockEndCharacter = this.code[this.codeIndex] === ']';
       if (isBlockEndCharacter) {
-        this.codeIndex++;
+        // this.codeIndex++;
         return;
       }
     }
