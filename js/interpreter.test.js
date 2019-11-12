@@ -47,7 +47,7 @@ test('`decrementValue()` decrements the value of the current memory pointer by o
   t.is(interpreter.currentValue, -1);
 });
 
-test('`jumpToAfterBlockStart()` (`]`) sets the code pointer to the index after the previous `[`  if the current value isn\'t 0', t => {
+test('`jumpToAfterBlockStart()` (`]`) sets the code pointer to the previous `[`\'s index if the current value isn\'t 0', t => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 1;
   interpreter.code = '+><<>+[[.[<<<+]]';
@@ -56,11 +56,11 @@ test('`jumpToAfterBlockStart()` (`]`) sets the code pointer to the index after t
 
   interpreter.jumpToAfterBlockStart();
 
-  t.is(interpreter.codeIndex, previousBracketIndex + 1);
-  t.is(interpreter.code[interpreter.codeIndex], '<');
+  t.is(interpreter.codeIndex, previousBracketIndex);
+  t.is(interpreter.code[interpreter.codeIndex], '[');
 });
 
-test('`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the index after the previous `[` if the current value is 0', t => {
+test('`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the previous `[`\'s index if the current value is 0', t => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 0;
   interpreter.code = '+><<>+[[.[<<<+]<]';
@@ -72,7 +72,7 @@ test('`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the index
   t.is(interpreter.codeIndex, startIndex);
 });
 
-test('`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the index after the next `]` if the current value is 0', t => {
+test('`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the next `]`\'s index if the current value is 0', t => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 0;
   interpreter.code = '+><<>+[[.[<<<+]<]';
@@ -81,11 +81,11 @@ test('`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the index after the
 
   interpreter.jumpToAfterBlockEnd();
 
-  t.is(interpreter.codeIndex, nextBracketIndex + 1);
-  t.is(interpreter.code[interpreter.codeIndex], '<');
+  t.is(interpreter.codeIndex, nextBracketIndex);
+  t.is(interpreter.code[interpreter.codeIndex], ']');
 });
 
-test('`jumpToAfterBlockEnd()` (`[`) does not set the code pointer to the index after the next `]` if the current value isn\´t 0', t => {
+test('`jumpToAfterBlockEnd()` (`[`) does not set the code pointer to the next `]`\'s index if the current value isn\´t 0', t => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 1;
   interpreter.code = '+><<>+[[.[<<<+]]';
@@ -107,37 +107,50 @@ test('`removeComments()` removes any non-brainfuck character', t => {
 test('`printValue()` adds the `currentValue` as a ascii string to the `result` property', t => {
   const letter = 'a';
   interpreter.result = '';
-  interpreter.currentValue = letter.charCodeAt(0);
+  interpreter.currentValue = letter.charCodeAt();
   interpreter.printValue();
 
   t.is(interpreter.result, letter);
 });
 
-test.serial('`interpret()` reads code and interprets it', t => {
+test('`interpret()` reads simple code and interprets it', t => {
+  const interpreter = new Interpreter();
+  
+  interpreter.result = '';
+  const result = ' ';
+  const code = Array(result.charCodeAt(0)).fill('+').join('') + '.';
+
+  interpreter.interpret(code);
+  
+  t.is(interpreter.result, result);
+});
+
+test.serial('`interpret()` reads advanced code and interprets it', async t => {
   const interpreter = new Interpreter();
   
   interpreter.result = '';
   const result = 'Hallo Verden!';
-  const code = `++++++++++
-  [
-     >+++++++>++++++++++>+++>+<<<<-
-  ]
-  >++. print 'H'
-  >---. print 'a'
-  +++++++++++. 'l'
-  . 'l'
-  +++. 'o'
-  >++. mellomrom
-  <<++++++++++++++. 'V'
-  >----------. 'e'
-  +++++++++++++. 'r'
-  --------------. 'd'
-  +. 'e'
-  +++++++++. 'n'
-  >+. '!'
+  const code = `
+    ++++++++++
+    [
+      >+++++++>++++++++++>+++>+<<<<-
+    ]
+    >++. print 'H'
+    >---. print 'a'
+    +++++++++++. 'l'
+    . 'l'
+    +++. 'o'
+    >++. mellomrom
+    <<++++++++++++++. 'V'
+    >----------. 'e'
+    +++++++++++++. 'r'
+    --------------. 'd'
+    +. 'e'
+    +++++++++. 'n'
+    >+. '!'
   `;
 
-  interpreter.interpret(code);
+  await interpreter.interpret(code);
   
   t.is(interpreter.result, result);
 });
