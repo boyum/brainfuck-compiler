@@ -8,14 +8,14 @@ test.beforeEach('', () => {
   interpreter = new Interpreter();
 });
 
-test('The memory tape should be initialized as an empty array', t => {
+test('The memory tape should be initialized as an empty array', (t) => {
   interpreter.initMemoryTape();
 
   t.is(interpreter['memoryIndex'], 0);
   t.deepEqual(interpreter['memoryTape'], []);
 });
 
-test('`incrementPointer()` increments the memory pointer by one', t => {
+test('`incrementPointer()` increments the memory pointer by one', (t) => {
   const interpreter = new Interpreter();
 
   t.is(interpreter['memoryIndex'], 0);
@@ -23,7 +23,7 @@ test('`incrementPointer()` increments the memory pointer by one', t => {
   t.is(interpreter['memoryIndex'], 1);
 });
 
-test('`decrementPointer()` decrements the memory pointer by one', t => {
+test('`decrementPointer()` decrements the memory pointer by one', (t) => {
   const interpreter = new Interpreter();
 
   t.is(interpreter['memoryIndex'], 0);
@@ -31,7 +31,7 @@ test('`decrementPointer()` decrements the memory pointer by one', t => {
   t.is(interpreter['memoryIndex'], -1);
 });
 
-test('`incrementValue()` increments the value of the current memory pointer by one', t => {
+test('`incrementValue()` increments the value of the current memory pointer by one', (t) => {
   const interpreter = new Interpreter();
 
   t.is(interpreter.currentValue, 0);
@@ -39,7 +39,7 @@ test('`incrementValue()` increments the value of the current memory pointer by o
   t.is(interpreter.currentValue, 1);
 });
 
-test('`decrementValue()` decrements the value of the current memory pointer by one', t => {
+test('`decrementValue()` decrements the value of the current memory pointer by one', (t) => {
   const interpreter = new Interpreter();
 
   t.is(interpreter.currentValue, 0);
@@ -47,7 +47,7 @@ test('`decrementValue()` decrements the value of the current memory pointer by o
   t.is(interpreter.currentValue, -1);
 });
 
-test('`jumpToAfterBlockStart()` (`]`) sets the code pointer to the previous `[`\'s index if the current value isn\'t 0', t => {
+test("`jumpToAfterBlockStart()` (`]`) sets the code pointer to the previous `[`'s index if the current value isn't 0", (t) => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 1;
   interpreter['code'] = '+><<>+[[.[<<<+]]'.split('') as AllowedCharacter[];
@@ -60,7 +60,7 @@ test('`jumpToAfterBlockStart()` (`]`) sets the code pointer to the previous `[`\
   t.is(interpreter['code'][interpreter['codeIndex']], '[');
 });
 
-test('`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the previous `[`\'s index if the current value is 0', t => {
+test("`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the previous `[`'s index if the current value is 0", (t) => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 0;
   interpreter['code'] = '+><<>+[[.[<<<+]<]'.split('') as AllowedCharacter[];
@@ -72,7 +72,7 @@ test('`jumpToAfterBlockStart()` (`]`) does not set the code pointer to the previ
   t.is(interpreter['codeIndex'], startIndex);
 });
 
-test('`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the next `]`\'s index if the current value is 0', t => {
+test("`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the next `]`'s index if the current value is 0", (t) => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 0;
   interpreter['code'] = '+><<>+[[.[<<<+]<]'.split('') as AllowedCharacter[];
@@ -85,7 +85,7 @@ test('`jumpToAfterBlockEnd()` (`[`) sets the code pointer to the next `]`\'s ind
   t.is(interpreter['code'][interpreter['codeIndex']], ']');
 });
 
-test('`jumpToAfterBlockEnd()` (`[`) does not set the code pointer to the next `]`\'s index if the current value isn\´t 0', t => {
+test("`jumpToAfterBlockEnd()` (`[`) does not set the code pointer to the next `]`'s index if the current value isn´t 0", (t) => {
   const interpreter = new Interpreter();
   interpreter.currentValue = 1;
   interpreter['code'] = '+><<>+[[.[<<<+]]'.split('') as AllowedCharacter[];
@@ -97,14 +97,14 @@ test('`jumpToAfterBlockEnd()` (`[`) does not set the code pointer to the next `]
   t.is(interpreter['codeIndex'], startIndex);
 });
 
-test('`removeComments()` removes any non-brainfuck character', t => {
+test('`removeComments()` removes any non-brainfuck character', (t) => {
   const withComments = '.,asdaskdpk,+-[]><<';
   const withoutComments = '.,,+-[]><<'.split('') as AllowedCharacter[];
 
   t.deepEqual(interpreter.removeComments(withComments), withoutComments);
-})
+});
 
-test('`printValue()` adds the `currentValue` as a ascii string to the `result` property', t => {
+test('`printValue()` adds the `currentValue` as a ascii string to the `result` property', (t) => {
   const letter = 'a';
   interpreter['result'] = '';
   interpreter.currentValue = letter.charCodeAt(0);
@@ -113,7 +113,7 @@ test('`printValue()` adds the `currentValue` as a ascii string to the `result` p
   t.is(interpreter['result'], letter);
 });
 
-test('`interpret()` reads simple code and interprets it', t => {
+test('`interpret()` reads simple code and interprets it', (t) => {
   const interpreter = new Interpreter();
 
   interpreter['result'] = '';
@@ -125,12 +125,14 @@ test('`interpret()` reads simple code and interprets it', t => {
   t.is(interpreter['result'], result);
 });
 
-test.serial('`interpret()` reads advanced code and interprets it', async t => {
-  const interpreter = new Interpreter();
+test.serial(
+  '`interpret()` reads advanced code and interprets it',
+  async (t) => {
+    const interpreter = new Interpreter();
 
-  interpreter['result'] = '';
-  const result = 'Hallo Verden!';
-  const code = `
+    interpreter['result'] = '';
+    const result = 'Hallo Verden!';
+    const code = `
     ++++++++++
     [
       >+++++++>++++++++++>+++>+<<<<-
@@ -150,7 +152,8 @@ test.serial('`interpret()` reads advanced code and interprets it', async t => {
     >+. '!'
   `;
 
-  await interpreter.interpret(code);
+    await interpreter.interpret(code);
 
-  t.is(interpreter['result'], result);
-});
+    t.is(interpreter['result'], result);
+  },
+);
