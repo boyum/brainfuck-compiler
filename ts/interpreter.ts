@@ -7,8 +7,6 @@ export class Interpreter {
   private result = '';
   private code: AllowedCharacter[] = [];
 
-  constructor() { }
-
   get currentValue() {
     const value = this.memoryTape[this.memoryIndex];
     const valueNotSet = typeof value === 'undefined';
@@ -50,14 +48,30 @@ export class Interpreter {
 
   interpretCharacter(character: AllowedCharacter): void {
     switch (character) {
-      case '>': this.incrementPointer(); break;
-      case '<': this.decrementPointer(); break;
-      case '+': this.incrementValue(); break;
-      case '-': this.decrementValue(); break;
-      case '.': this.printValue(); break;
-      case ',': this.readValue(); break;
-      case '[': this.jumpToAfterBlockEnd(); break;
-      case ']': this.jumpToAfterBlockStart(); break;
+      case '>':
+        this.incrementPointer();
+        break;
+      case '<':
+        this.decrementPointer();
+        break;
+      case '+':
+        this.incrementValue();
+        break;
+      case '-':
+        this.decrementValue();
+        break;
+      case '.':
+        this.printValue();
+        break;
+      case ',':
+        this.readValue();
+        break;
+      case '[':
+        this.jumpToAfterBlockEnd();
+        break;
+      case ']':
+        this.jumpToAfterBlockStart();
+        break;
     }
   }
 
@@ -96,9 +110,7 @@ export class Interpreter {
     this.result += String.fromCharCode(this.currentValue);
   }
 
-  readValue(): void {
-
-  }
+  readValue(): void {}
 
   jumpToAfterBlockStart(): void {
     const doNothing = this.currentValue === 0;
@@ -107,9 +119,12 @@ export class Interpreter {
     }
 
     const earliestBlockStart = this.code.indexOf('[');
-    const hasEarlierBlockStart = earliestBlockStart > -1 && earliestBlockStart < this.codeIndex;
+    const hasEarlierBlockStart =
+      earliestBlockStart > -1 && earliestBlockStart < this.codeIndex;
     if (!hasEarlierBlockStart) {
-      console.error(`Syntax error at character number ${this.codeIndex}. No earlier block start ('[')`);
+      console.error(
+        `Syntax error at character number ${this.codeIndex}. No earlier block start ('[')`,
+      );
       return;
     }
 
@@ -130,7 +145,9 @@ export class Interpreter {
     const lastBlockEnd = this.code.lastIndexOf(']');
     const hasLaterBlockEnd = lastBlockEnd > -1 && lastBlockEnd > this.codeIndex;
     if (!hasLaterBlockEnd) {
-      console.error(`Syntax error at character number ${this.codeIndex}. No later block end (']')`);
+      console.error(
+        `Syntax error at character number ${this.codeIndex}. No later block end (']')`,
+      );
       return;
     }
 
@@ -152,6 +169,8 @@ export class Interpreter {
    * Removes any character that isn't <>[],.+-
    */
   removeComments(codeStr: string): AllowedCharacter[] {
-    return Array.from(codeStr.replace(/[^\>\<\+\-\.\,\[\]]/g, '')) as AllowedCharacter[];
+    return Array.from(
+      codeStr.replace(/[^\>\<\+\-\.\,\[\]]/g, ''),
+    ) as AllowedCharacter[];
   }
 }
