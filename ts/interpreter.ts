@@ -1,15 +1,15 @@
-import { AllowedCharacter } from './AllowedCharacter';
+import { AllowedCharacter } from "./AllowedCharacter.js";
 
 export class Interpreter {
   private memoryTape: number[] = [];
   private memoryIndex = 0;
   private codeIndex = 0;
-  private result = '';
+  private result = "";
   private code: AllowedCharacter[] = [];
 
   get currentValue() {
     const value = this.memoryTape[this.memoryIndex];
-    const valueNotSet = typeof value === 'undefined';
+    const valueNotSet = typeof value === "undefined";
     if (valueNotSet) {
       return 0;
     }
@@ -36,7 +36,7 @@ export class Interpreter {
 
       this.interpretCharacter(currentCodeCharacter);
 
-      printAfterRun = currentCodeCharacter === '.';
+      printAfterRun = currentCodeCharacter === ".";
 
       this.codeIndex++;
     }
@@ -48,28 +48,28 @@ export class Interpreter {
 
   interpretCharacter(character: AllowedCharacter): void {
     switch (character) {
-      case '>':
+      case ">":
         this.incrementPointer();
         break;
-      case '<':
+      case "<":
         this.decrementPointer();
         break;
-      case '+':
+      case "+":
         this.incrementValue();
         break;
-      case '-':
+      case "-":
         this.decrementValue();
         break;
-      case '.':
+      case ".":
         this.printValue();
         break;
-      case ',':
+      case ",":
         this.readValue();
         break;
-      case '[':
+      case "[":
         this.jumpToAfterBlockEnd();
         break;
-      case ']':
+      case "]":
         this.jumpToAfterBlockStart();
         break;
     }
@@ -118,7 +118,7 @@ export class Interpreter {
       return;
     }
 
-    const earliestBlockStart = this.code.indexOf('[');
+    const earliestBlockStart = this.code.indexOf("[");
     const hasEarlierBlockStart =
       earliestBlockStart > -1 && earliestBlockStart < this.codeIndex;
     if (!hasEarlierBlockStart) {
@@ -129,7 +129,7 @@ export class Interpreter {
     }
 
     while (this.codeIndex--) {
-      const isBlockStartCharacter = this.code[this.codeIndex] === '[';
+      const isBlockStartCharacter = this.code[this.codeIndex] === "[";
       if (isBlockStartCharacter) {
         return;
       }
@@ -142,7 +142,7 @@ export class Interpreter {
       return;
     }
 
-    const lastBlockEnd = this.code.lastIndexOf(']');
+    const lastBlockEnd = this.code.lastIndexOf("]");
     const hasLaterBlockEnd = lastBlockEnd > -1 && lastBlockEnd > this.codeIndex;
     if (!hasLaterBlockEnd) {
       console.error(
@@ -152,7 +152,7 @@ export class Interpreter {
     }
 
     while (this.codeIndex++ <= this.code.length) {
-      const isBlockEndCharacter = this.code[this.codeIndex] === ']';
+      const isBlockEndCharacter = this.code[this.codeIndex] === "]";
       if (isBlockEndCharacter) {
         return;
       }
@@ -170,7 +170,7 @@ export class Interpreter {
    */
   removeComments(codeStr: string): AllowedCharacter[] {
     return Array.from(
-      codeStr.replace(/[^\>\<\+\-\.\,\[\]]/g, ''),
+      codeStr.replace(/[^\>\<\+\-\.\,\[\]]/g, ""),
     ) as AllowedCharacter[];
   }
 }

@@ -1,1 +1,1 @@
-export type AllowedCharacter = '>' | '<' | '+' | '-' | '.' | ',' | '[' | ']';
+export type AllowedCharacter = ">" | "<" | "+" | "-" | "." | "," | "[" | "]";
